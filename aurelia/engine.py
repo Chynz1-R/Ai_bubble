@@ -36,6 +36,101 @@ class Analysis:
         return "\n".join(lines).strip()
 
 
+DOMAIN_PROFILES = (
+    (
+        ("flood", "coastal", "storm surge"),
+        {
+            "question": "Which mix of wetland restoration, selective barriers, and infrastructure elevation most reduces flood losses in the target region?",
+            "known": [
+                "Flood resilience work should compare protection gains against ecological and financial tradeoffs.",
+                "High-impact infrastructure choices should be tested before large-scale rollout.",
+            ],
+            "hypotheses": [
+                "Restored wetlands may reduce wave energy and downstream damage.",
+                "Selective barriers may outperform continuous walls on cost per protected area.",
+                "Elevating critical facilities may reduce long-term service disruption.",
+            ],
+            "pilot": [
+                "Select one vulnerable coastal zone and define baseline flood-loss metrics.",
+                "Test a limited wetland restoration segment with low-cost level sensors.",
+                "Compare targeted barrier placement and elevation plans against a no-change baseline.",
+            ],
+            "benefit": [
+                "Could reduce flood damage while preserving more ecosystem value than a single hard-infrastructure strategy.",
+            ],
+            "uncertainty": [
+                "Results depend on storm intensity, sediment movement, local maintenance capacity, and land-use constraints.",
+                "This output is a planning hypothesis, not site-specific engineering advice.",
+            ],
+            "approval": [
+                "Environmental review",
+                "Infrastructure and emergency-management review",
+                "Community and budget approval",
+            ],
+        },
+    ),
+    (
+        ("food", "crop", "hunger", "nutrition"),
+        {
+            "question": "Which combination of crops, irrigation, storage, and distribution can increase nutrition per liter of water in the target region?",
+            "known": [
+                "Food shortages usually involve interacting production, storage, logistics, and affordability constraints.",
+                "Interventions should be evaluated against nutrition, water use, cost, and local adoption barriers.",
+            ],
+            "hypotheses": [
+                "Improved storage may recover more food than expanding planted area alone.",
+                "Crop mixes with lower water demand may improve nutrition resilience.",
+                "Distribution changes may unlock gains even when yields remain flat.",
+            ],
+            "pilot": [
+                "Run a small regional comparison of current practice versus improved storage and irrigation scheduling.",
+                "Measure nutrition delivered, water use, spoilage, and farmer adoption over one growing cycle.",
+            ],
+            "benefit": [
+                "Could improve food availability and resource efficiency without assuming a single cause of shortages.",
+            ],
+            "uncertainty": [
+                "Local soil, market access, rainfall, and policy constraints may dominate the outcome.",
+            ],
+            "approval": [
+                "Agronomy review",
+                "Local farmer and community review",
+                "Budget and procurement approval",
+            ],
+        },
+    ),
+    (
+        ("cyber", "fraud", "misinformation", "impersonation"),
+        {
+            "question": "Which detection signals and human-review checkpoints most improve response quality while minimizing false positives?",
+            "known": [
+                "Defense systems must balance sensitivity with the cost of false alarms.",
+                "Security interventions should preserve auditability and human escalation paths.",
+            ],
+            "hypotheses": [
+                "Combining behavioral signals with provenance checks may detect abuse more reliably than either alone.",
+                "Tiered escalation may reduce analyst load without automating irreversible actions.",
+            ],
+            "pilot": [
+                "Evaluate detection rules on a labeled historical sample.",
+                "Track precision, recall, and review time before broader deployment.",
+            ],
+            "benefit": [
+                "Could improve detection quality while keeping high-impact decisions under human control.",
+            ],
+            "uncertainty": [
+                "Adversaries adapt quickly, so measured performance may decay after deployment.",
+            ],
+            "approval": [
+                "Security review",
+                "Privacy and legal review",
+                "Operational approval for escalation procedures",
+            ],
+        },
+    ),
+)
+
+
 class AURELIAEngine:
     def analyze(self, problem: str) -> Analysis:
         cleaned_problem = " ".join(problem.split()).strip()
@@ -59,93 +154,9 @@ class AURELIAEngine:
         )
 
     def _domain_profile(self, problem: str) -> dict[str, list[str] | str]:
-        if any(word in problem for word in ("flood", "coastal", "storm surge")):
-            return {
-                "question": "Which mix of wetland restoration, selective barriers, and infrastructure elevation most reduces flood losses in the target region?",
-                "known": [
-                    "Flood resilience work should compare protection gains against ecological and financial tradeoffs.",
-                    "High-impact infrastructure choices should be tested before large-scale rollout.",
-                ],
-                "hypotheses": [
-                    "Restored wetlands may reduce wave energy and downstream damage.",
-                    "Selective barriers may outperform continuous walls on cost per protected area.",
-                    "Elevating critical facilities may reduce long-term service disruption.",
-                ],
-                "pilot": [
-                    "Select one vulnerable coastal zone and define baseline flood-loss metrics.",
-                    "Test a limited wetland restoration segment with low-cost level sensors.",
-                    "Compare targeted barrier placement and elevation plans against a no-change baseline.",
-                ],
-                "benefit": [
-                    "Could reduce flood damage while preserving more ecosystem value than a single hard-infrastructure strategy.",
-                ],
-                "uncertainty": [
-                    "Results depend on storm intensity, sediment movement, local maintenance capacity, and land-use constraints.",
-                    "This output is a planning hypothesis, not site-specific engineering advice.",
-                ],
-                "approval": [
-                    "Environmental review",
-                    "Infrastructure and emergency-management review",
-                    "Community and budget approval",
-                ],
-            }
-
-        if any(word in problem for word in ("food", "crop", "hunger", "nutrition")):
-            return {
-                "question": "Which combination of crops, irrigation, storage, and distribution can increase nutrition per liter of water in the target region?",
-                "known": [
-                    "Food shortages usually involve interacting production, storage, logistics, and affordability constraints.",
-                    "Interventions should be evaluated against nutrition, water use, cost, and local adoption barriers.",
-                ],
-                "hypotheses": [
-                    "Improved storage may recover more food than expanding planted area alone.",
-                    "Crop mixes with lower water demand may improve nutrition resilience.",
-                    "Distribution changes may unlock gains even when yields remain flat.",
-                ],
-                "pilot": [
-                    "Run a small regional comparison of current practice versus improved storage and irrigation scheduling.",
-                    "Measure nutrition delivered, water use, spoilage, and farmer adoption over one growing cycle.",
-                ],
-                "benefit": [
-                    "Could improve food availability and resource efficiency without assuming a single cause of shortages.",
-                ],
-                "uncertainty": [
-                    "Local soil, market access, rainfall, and policy constraints may dominate the outcome.",
-                ],
-                "approval": [
-                    "Agronomy review",
-                    "Local farmer and community review",
-                    "Budget and procurement approval",
-                ],
-            }
-
-        if any(word in problem for word in ("cyber", "fraud", "misinformation", "impersonation")):
-            return {
-                "question": "Which detection signals and human-review checkpoints most improve response quality while minimizing false positives?",
-                "known": [
-                    "Defense systems must balance sensitivity with the cost of false alarms.",
-                    "Security interventions should preserve auditability and human escalation paths.",
-                ],
-                "hypotheses": [
-                    "Combining behavioral signals with provenance checks may detect abuse more reliably than either alone.",
-                    "Tiered escalation may reduce analyst load without automating irreversible actions.",
-                ],
-                "pilot": [
-                    "Evaluate detection rules on a labeled historical sample.",
-                    "Track precision, recall, and review time before broader deployment.",
-                ],
-                "benefit": [
-                    "Could improve detection quality while keeping high-impact decisions under human control.",
-                ],
-                "uncertainty": [
-                    "Adversaries adapt quickly, so measured performance may decay after deployment.",
-                ],
-                "approval": [
-                    "Security review",
-                    "Privacy and legal review",
-                    "Operational approval for escalation procedures",
-                ],
-            }
+        for keywords, profile in DOMAIN_PROFILES:
+            if any(word in problem for word in keywords):
+                return profile
 
         return {
             "question": f"Which measurable interventions could address this problem most effectively: {problem}?",
