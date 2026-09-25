@@ -135,7 +135,7 @@ DOMAIN_PROFILES = (
 class AURELIAEngine:
     def analyze(self, problem: str) -> Analysis:
         cleaned_problem = " ".join(problem.split()).strip()
-        if not cleaned_problem:
+        if not cleaned_problem or not any(char.isalnum() for char in cleaned_problem):
             raise ValueError("problem text is required")
 
         domain = self._domain_profile(cleaned_problem, cleaned_problem.lower())

@@ -28,6 +28,18 @@ class CLITests(unittest.TestCase):
         self.assertIn("usage:", result.stderr.lower())
         self.assertIn("problem", result.stderr.lower())
 
+    def test_module_invocation_rejects_punctuation_only_problem(self) -> None:
+        result = subprocess.run(
+            [sys.executable, "-m", "aurelia", "...?!"],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("usage:", result.stderr.lower())
+        self.assertIn("problem text is required", result.stderr.lower())
+
 
 if __name__ == "__main__":
     unittest.main()

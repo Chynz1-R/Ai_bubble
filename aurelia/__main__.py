@@ -19,7 +19,10 @@ def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
     problem = " ".join(args.problem)
-    analysis = AURELIAEngine().analyze(problem)
+    try:
+        analysis = AURELIAEngine().analyze(problem)
+    except ValueError as exc:
+        parser.error(str(exc))
     print(analysis.render())
     return 0
 

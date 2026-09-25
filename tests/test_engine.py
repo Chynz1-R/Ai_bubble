@@ -38,6 +38,10 @@ class AURELIAEngineTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             AURELIAEngine().analyze("   ")
 
+    def test_punctuation_only_problem_is_rejected(self) -> None:
+        with self.assertRaises(ValueError):
+            AURELIAEngine().analyze("...?!")
+
 
 if __name__ == "__main__":
     unittest.main()
