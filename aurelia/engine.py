@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 
 
@@ -137,7 +138,7 @@ class AURELIAEngine:
         if not cleaned_problem:
             raise ValueError("problem text is required")
 
-        domain = self._domain_profile(cleaned_problem.lower())
+        domain = self._domain_profile(cleaned_problem, cleaned_problem.lower())
         return Analysis(
             problem=cleaned_problem,
             research_question=domain["question"],
@@ -153,13 +154,14 @@ class AURELIAEngine:
             human_approval_required=domain["approval"],
         )
 
-    def _domain_profile(self, problem: str) -> dict[str, list[str] | str]:
+    def _domain_profile(self, original_problem: str, normalized_problem: str) -> dict[str, list[str] | str]:
         for keywords, profile in DOMAIN_PROFILES:
-            if any(word in problem for word in keywords):
+            if any(self._matches_keyword(normalized_problem, word) for word in keywords):
                 return profile
 
+        formatted_problem = original_problem.rstrip("?.! ")
         return {
-            "question": f"Which measurable interventions could address this problem most effectively: {problem}?",
+            "question": f"Which measurable interventions could address this problem most effectively: {formatted_problem}?",
             "known": [
                 "The problem statement identifies a real-world issue that needs evidence before action.",
                 "High-impact recommendations should be framed as testable proposals instead of certainties.",
@@ -185,3 +187,7 @@ class AURELIAEngine:
                 "Formal authorization before irreversible action",
             ],
         }
+
+    @staticmethod
+    def _matches_keyword(problem: str, keyword: str) -> bool:
+        return re.search(rf"\b{re.escape(keyword)}\b", problem) is not None

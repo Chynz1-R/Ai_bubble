@@ -29,6 +29,11 @@ class AURELIAEngineTests(unittest.TestCase):
         self.assertIn("Which measurable interventions could address this problem", analysis.research_question)
         self.assertTrue(any("domain expert review" in item.lower() for item in analysis.human_approval_required))
 
+    def test_keyword_matching_avoids_partial_word_false_positive(self) -> None:
+        analysis = AURELIAEngine().analyze("How can we improve seafood traceability?")
+
+        self.assertIn("Which measurable interventions could address this problem", analysis.research_question)
+
     def test_blank_problem_is_rejected(self) -> None:
         with self.assertRaises(ValueError):
             AURELIAEngine().analyze("   ")
