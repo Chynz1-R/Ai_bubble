@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aurelia"
+version = "0.1.0"
+description = "A safety-first CLI for structured problem analysis."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT-like project license in repository root" }
+authors = [{ name = "Chynz1-R" }]
+
+[tool.setuptools]
+packages = ["aurelia"]
