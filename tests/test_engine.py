@@ -34,6 +34,11 @@ class AURELIAEngineTests(unittest.TestCase):
 
         self.assertIn("Which measurable interventions could address this problem", analysis.research_question)
 
+    def test_hyphenated_phrase_matches_multiword_keyword(self) -> None:
+        analysis = AURELIAEngine().analyze("How should we prepare for storm-surge damage?")
+
+        self.assertIn("wetland", analysis.render().lower())
+
     def test_blank_problem_is_rejected(self) -> None:
         with self.assertRaises(ValueError):
             AURELIAEngine().analyze("   ")

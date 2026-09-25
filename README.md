@@ -24,6 +24,8 @@ python -m pip install -e .
 python -m aurelia "How effective is intervention for coastal flooding?"
 ```
 
+Blank or punctuation-only input is rejected with a CLI usage error.
+
 ## Testing
 
 ```bash

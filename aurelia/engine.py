@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import re
+import string
 from dataclasses import dataclass
+from typing import TypedDict
 
 
 @dataclass(frozen=True)
@@ -35,6 +37,16 @@ class Analysis:
                 lines.append(f"- {item}")
             lines.append("")
         return "\n".join(lines).strip()
+
+
+class Profile(TypedDict):
+    question: str
+    known: list[str]
+    hypotheses: list[str]
+    pilot: list[str]
+    benefit: list[str]
+    uncertainty: list[str]
+    approval: list[str]
 
 
 DOMAIN_PROFILES = (
@@ -135,10 +147,11 @@ DOMAIN_PROFILES = (
 class AURELIAEngine:
     def analyze(self, problem: str) -> Analysis:
         cleaned_problem = " ".join(problem.split()).strip()
-        if not cleaned_problem or not any(char.isalnum() for char in cleaned_problem):
+        normalized_problem = self._normalize_text(cleaned_problem)
+        if not cleaned_problem or not normalized_problem:
             raise ValueError("problem text is required")
 
-        domain = self._domain_profile(cleaned_problem, cleaned_problem.lower())
+        domain = self._domain_profile(cleaned_problem, normalized_problem)
         return Analysis(
             problem=cleaned_problem,
             research_question=domain["question"],
@@ -154,14 +167,13 @@ class AURELIAEngine:
             human_approval_required=domain["approval"],
         )
 
-    def _domain_profile(self, original_problem: str, normalized_problem: str) -> dict[str, list[str] | str]:
+    def _domain_profile(self, original_problem: str, normalized_problem: str) -> Profile:
         for keywords, profile in DOMAIN_PROFILES:
             if any(self._matches_keyword(normalized_problem, word) for word in keywords):
                 return profile
 
-        formatted_problem = original_problem.rstrip("?.! ")
         return {
-            "question": f"Which measurable interventions could address this problem most effectively: {formatted_problem}?",
+            "question": self._format_generic_question(original_problem),
             "known": [
                 "The problem statement identifies a real-world issue that needs evidence before action.",
                 "High-impact recommendations should be framed as testable proposals instead of certainties.",
@@ -190,4 +202,15 @@ class AURELIAEngine:
 
     @staticmethod
     def _matches_keyword(problem: str, keyword: str) -> bool:
-        return re.search(rf"\b{re.escape(keyword)}\b", problem) is not None
+        normalized_problem = f" {problem} "
+        normalized_keyword = f" {AURELIAEngine._normalize_text(keyword)} "
+        return normalized_keyword in normalized_problem
+
+    @staticmethod
+    def _normalize_text(text: str) -> str:
+        return " ".join(re.findall(r"[a-z0-9]+", text.lower()))
+
+    @staticmethod
+    def _format_generic_question(problem: str) -> str:
+        trimmed_problem = problem.rstrip(string.punctuation + " ") or problem
+        return f"Which measurable interventions could address this problem most effectively: {trimmed_problem}?"

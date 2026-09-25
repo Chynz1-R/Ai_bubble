@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "A safety-first CLI for structured problem analysis."
 readme = "README.md"
 requires-python = ">=3.9"
-license = { file = "LICENSE" }
+license = { text = "Mozilla Public License 2.0 (MPL-2.0)" }
 authors = [{ name = "Chynz1-R" }]
 
 [tool.setuptools]
