@@ -17,6 +17,18 @@ class AURELIAEngineTests(unittest.TestCase):
         self.assertIn("Human approval required:", rendered)
         self.assertIn("wetland", rendered.lower())
 
+    def test_cybersecurity_prompt_uses_defense_language(self) -> None:
+        analysis = AURELIAEngine().analyze("How can we reduce impersonation fraud in online support?")
+
+        self.assertIn("detection", analysis.research_question.lower())
+        self.assertTrue(any("security review" == item.lower() for item in analysis.human_approval_required))
+
+    def test_generic_prompt_uses_generic_fallback(self) -> None:
+        analysis = AURELIAEngine().analyze("How can we improve public trust in new research tools?")
+
+        self.assertIn("Which measurable interventions could address this problem", analysis.research_question)
+        self.assertTrue(any("domain expert review" in item.lower() for item in analysis.human_approval_required))
+
     def test_blank_problem_is_rejected(self) -> None:
         with self.assertRaises(ValueError):
             AURELIAEngine().analyze("   ")
